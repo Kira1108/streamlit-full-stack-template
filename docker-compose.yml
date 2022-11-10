@@ -1,17 +1,26 @@
 version: '3'
 
 services:
+
   frontend:
     build: frontend
+    command: streamlit run main.py
     ports:
       - 8503:8501
     depends_on:
       - backend
     volumes:
         - ./storage:/storage
+        - ./frontend:/usr/src/app
+
   backend:
     build: backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/usr/src/app
+      - ./storage:/storage
     ports:
       - 8007:8000
-    volumes:
-      - ./storage:/storage
+    environment:
+       - ENVIRONMENT=dev
+       - TESTING=0
